@@ -32,8 +32,7 @@ struct tuple_base<std::index_sequence<Indexes...>, Types...> : tuple_value<Index
 	constexpr tuple_base(const tuple_base&) = default;
 	constexpr tuple_base(tuple_base&&) = default;
 
-	template <std::size_t Count = sizeof...(Types), typename = std::enable_if_t<Count >= 1>>
-	constexpr tuple_base(Types... values) : tuple_value<Indexes, Types>{ values }... {}
+	constexpr tuple_base(Types... values) requires (sizeof...(Types) > 0) : tuple_value<Indexes, Types>{ values }... {}
 
 	constexpr tuple_base& operator=(const tuple_base&) = default;
 	constexpr tuple_base& operator=(tuple_base&&) = default;
