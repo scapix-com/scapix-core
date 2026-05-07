@@ -61,16 +61,13 @@ concept member_object_pointer = std::is_member_object_pointer_v<T>;
 template <typename T>
 concept member_function_pointer = std::is_member_function_pointer_v<T>;
 
-// class_template
+// specialization_of
 
-template <typename T, template<typename...> class C>
-constexpr bool is_class_template = false;
-
-template <template<typename...> class C, typename ...Ts>
-constexpr bool is_class_template<C<Ts...>, C> = true;
-
-template <typename T, template<typename...> class C>
-concept class_template = is_class_template<T, C>;
+template <typename T, template <typename...> class C, typename ...Args1>
+concept specialization_of = requires (T x)
+{
+	[] <typename ...Args2> (C<Args1..., Args2...>&) {}(x);
+};
 
 } // namespace scapix
 
