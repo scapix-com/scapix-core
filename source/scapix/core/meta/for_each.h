@@ -21,7 +21,18 @@ struct for_each_impl<L<T...>>
 	template <class F>
 	static constexpr void call(F&& f)
 	{
-		(std::forward<F>(f).template operator()<T>(), ...);
+		if constexpr (requires { (std::forward<F>(f).template operator()<T>(), ...); })
+		{
+			(std::forward<F>(f).template operator()<T>(), ...);
+		}
+		else if constexpr (requires { (std::forward<F>(f)(T()), ...); })
+		{
+			(std::forward<F>(f)(T()), ...);
+		}
+		else
+		{
+			static_assert(false, "for_each: unsupported interface");
+		}
 	}
 };
 
