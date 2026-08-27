@@ -11,6 +11,11 @@
 
 namespace scapix {
 
+// function_type
+
+template <typename T>
+concept function_type = std::is_function_v<T>;
+
 // member_pointer_type
 
 template <typename T>
