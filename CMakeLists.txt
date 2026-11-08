@@ -8,5 +8,5 @@ add_library(scapix::core ALIAS scapix_core)
 target_include_directories(scapix_core INTERFACE source)
 
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS source/*)
-source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/source" PREFIX "source" FILES ${sources})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${sources})
 target_sources(scapix_core PRIVATE ${sources})
