@@ -7,7 +7,6 @@
 #ifndef SCAPIX_CORE_FIXED_STRING_H
 #define SCAPIX_CORE_FIXED_STRING_H
 
-#include <algorithm>
 #include <concepts>
 #include <cstddef>
 #include <iterator>
@@ -30,7 +29,7 @@ concept string_literal =
 	std::is_array_v<std::remove_reference_t<T>> &&
 	std::is_const_v<std::remove_extent_t<std::remove_reference_t<T>>> &&
 	character<CharT> &&
-	std::same_as<CharT, std::remove_cv_t<std::remove_extent_t<std::remove_reference_t<T>>>>; 
+	std::same_as<CharT, std::remove_cv_t<std::remove_extent_t<std::remove_reference_t<T>>>>;
 
 template <string_literal L>
 using literal_char = std::remove_cv_t<std::remove_extent_t<std::remove_reference_t<L>>>;
@@ -71,8 +70,8 @@ struct fixed_string
 	constexpr operator const CharT*() const noexcept { return content; }
 };
 
-template <string_literal L>
-fixed_string(L&&) -> fixed_string<literal_char<L>, literal_size<L>>;
+template <character CharT, std::size_t N>
+fixed_string(const CharT(&)[N]) -> fixed_string<CharT, N - 1>;
 
 template <character CharT, std::size_t N1, std::size_t N2>
 constexpr fixed_string<CharT, N1 + N2> operator + (const fixed_string<CharT, N1>& lhs, const fixed_string<CharT, N2>& rhs) noexcept
@@ -104,9 +103,17 @@ template <character CharT, std::size_t N1, std::size_t N2>
 constexpr bool operator == (const fixed_string<CharT, N1>& lhs, const fixed_string<CharT, N2>& rhs) noexcept
 {
 	if constexpr (N1 != N2)
+	{
 		return false;
+	}
 	else
-		return std::equal(lhs.begin(), lhs.end(), rhs.begin());
+	{
+		for (std::size_t i = 0; i < N1; ++i)
+			if (lhs.content[i] != rhs.content[i])
+				return false;
+
+		return true;
+	}
 }
 
 // C++20 also tries the reversed argument order.
